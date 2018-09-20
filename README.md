@@ -1,3 +1,3 @@
-![Logo](jogr.png)
+![Logo](jogrlogo.png)
 © Jogr 2018
 ====================================
