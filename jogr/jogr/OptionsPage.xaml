@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="jogr.OptionsPage">
     <ContentPage.Content>
-        <StackLayout android:background="@color/launcher_background">
+        <StackLayout BackgroundColor="Aqua">
             <Label Text="Welcome to Xamarin.Forms!"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
