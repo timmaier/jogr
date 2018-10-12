@@ -6,7 +6,8 @@
 
     <StackLayout>
         <!-- Place new controls here -->
-        <Label Text="Welcome to Jogr V1!" 
+        <!-- Nothing happens here -->
+        <Label Text="This is the main page!" 
            HorizontalOptions="Center"
            VerticalOptions="CenterAndExpand" />
     </StackLayout>

@@ -9,11 +9,11 @@
 				<!--<Label Text="ready.set." XAlign="Center" />-->
 				<Label Text="ready. set." XAlign="Center" TextColor="White" FontSize="40" FontFamily="{StaticResource NormalFont}"/>
 			</Frame>
-			<Label Text="Welcome to Xamarin.Forms!"
+			<Label Text="Welcome to Options/Search page!"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
 
-			<Button Clicked="GoToMapsPage" WidthRequest="120" HorizontalOptions="Center" BackgroundColor="#315C6A" TextColor="White" Text="go." FontSize="45" FontFamily="{StaticResource NormalFont}" CornerRadius="15" />
+            <Button Clicked="GoToMapsPage" WidthRequest="120" HorizontalOptions="Center" BackgroundColor="#315C6A" TextColor="White" Text="go." FontSize="45"  FontFamily="{StaticResource NormalFont}" CornerRadius="15" />
 		</StackLayout>
     </ContentPage.Content>
 </ContentPage>
