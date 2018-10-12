@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.GoogleMaps;
 
 namespace jogr
 {
@@ -16,6 +17,7 @@ namespace jogr
 		{
 			InitializeComponent ();
             NavigationPage.SetHasNavigationBar(this, false);
+
         }
         
         //Pressed Back Button

@@ -1,17 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="jogr.MapPage">
-    <ContentPage.Content>
-        <StackLayout BackgroundColor="White">
-            <Frame CornerRadius="20" BackgroundColor="#315C6A" Padding="20">
-                <Label Text="map page" XAlign="Center" TextColor="White" FontSize="40" FontFamily="{StaticResource NormalFont}"/>
-			</Frame>
-			<Label Text="Welcome to Map Page!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:maps="clr-namespace:Xamarin.Forms.GoogleMaps;assembly=Xamarin.Forms.GoogleMaps"
+    x:Class="jogr.MapPage">
+    <StackLayout VerticalOptions="StartAndExpand" Padding="30">
+        <maps:Map WidthRequest="320" HeightRequest="200"
+            x:Name="MyMap"
+            IsShowingUser="true"
+            MapType="Hybrid"
+        />
 
-			<Button Clicked="GoToOptionsPage" WidthRequest="160" HorizontalOptions="Center" BackgroundColor="#315C6A" TextColor="White" Text="back." FontSize="45" FontFamily="{StaticResource NormalFont}" CornerRadius="15" />
-		</StackLayout>
-	</ContentPage.Content>
+        <Button Clicked="GoToOptionsPage" WidthRequest="160" HorizontalOptions="Center" BackgroundColor="#315C6A" TextColor="White" Text="back." FontSize="45" FontFamily="{StaticResource NormalFont}" CornerRadius="15" />
+    </StackLayout>
 </ContentPage>
