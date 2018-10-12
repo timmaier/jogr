@@ -11,7 +11,11 @@ namespace jogr
         {
             InitializeComponent();
 
-            MainPage = new MainPage();
+            //Create a navigation parent to be able to switch between pages
+            var navPage = new NavigationPage(new OptionsPage());
+            NavigationPage.SetHasNavigationBar(this, false);
+            //Start on the first page
+            Application.Current.MainPage = navPage;
         }
 
         protected override void OnStart()

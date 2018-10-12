@@ -15,6 +15,15 @@ namespace jogr
 		public MapPage ()
 		{
 			InitializeComponent ();
-		}
-	}
+            NavigationPage.SetHasNavigationBar(this, false);
+        }
+        
+        //Pressed Back Button
+        async void GoToOptionsPage(object sender, EventArgs args)
+        {
+            System.Diagnostics.Debug.WriteLine("Pressed");
+
+            await Navigation.PopAsync();
+        }
+    }
 }
