@@ -58,6 +58,9 @@
     <PackageReference Include="Xamarin.Forms.GoogleMaps">
       <Version>3.0.4</Version>
     </PackageReference>
+    <PackageReference Include="Xamarin.GooglePlayServices.Maps">
+      <Version>60.1142.1</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />

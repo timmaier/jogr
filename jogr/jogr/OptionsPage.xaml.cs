@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
+
 namespace jogr
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
@@ -23,8 +24,14 @@ namespace jogr
         async void GoToMapsPage(object sender, EventArgs args)
         {
             System.Diagnostics.Debug.WriteLine("Pressed");
-
-            await Navigation.PushAsync(new MapPage());
+            try
+            {
+                await Navigation.PushAsync(new MapPage());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("MyStackTrace: {0}", ex.ToString());
+            }
         }
 	}
 }

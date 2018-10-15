@@ -14,6 +14,8 @@ namespace jogr
             //Create a navigation parent to be able to switch between pages
             var navPage = new NavigationPage(new OptionsPage());
             NavigationPage.SetHasNavigationBar(this, false);
+
+
             //Start on the first page
             Application.Current.MainPage = navPage;
         }
@@ -21,6 +23,7 @@ namespace jogr
         protected override void OnStart()
         {
             // Handle when your app starts
+            //ActivityCompat.RequestPermissions(this, REQUEST_LOCATION);
         }
 
         protected override void OnSleep()

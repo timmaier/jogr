@@ -13,11 +13,14 @@ namespace jogr
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class MapPage : ContentPage
 	{
+        //Constructor
 		public MapPage ()
 		{
-			InitializeComponent ();
+            InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
 
+            //Get a reference to the map component
+            Map map = (Map)MyMap;
         }
         
         //Pressed Back Button
