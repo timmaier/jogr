@@ -11,46 +11,129 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.GoogleMaps;
 
+using Plugin.Geolocator;
+
 namespace jogr
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class MapPage : ContentPage
 	{
         //Constructor
-		public MapPage ()
-		{
+        public MapPage()
+        {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
 
             //Get a reference to the map component
             Map map = (Map)MyMap;
-            //Add pin to map
-            Pin myLocation = new Pin
+
+            //public double myLat, myLng;
+
+            //Creating Position variable based on emulator GPS, exporting lat/lng to make Google Position
+
+            async Task GetCurrentLatLng()
             {
-                Type = PinType.Place,
-                Position = GetLocation(),
-                Label = "me",
-                Address = "Brisbane"
-            };
-            map.Pins.Add(myLocation);
+                Plugin.Geolocator.Abstractions.Position position = null;
+                try
+                {
+                    var locator = CrossGeolocator.Current;
+                    locator.DesiredAccuracy = 100;
+                    position = await locator.GetPositionAsync(TimeSpan.FromSeconds(1));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("There was an error: " + ex);
+                }
 
-            double lat = GetLocation().Latitude;
-            double lon = GetLocation().Longitude;
+                var output = string.Format("Lat: {0}, Lng: {1}", position.Latitude, position.Longitude);
 
-            /*Xamarin.Forms.GoogleMaps.Bounds Australia = new Bounds(GetLocation(),GetLocation());
+                Console.WriteLine(output);
 
-            map.MoveCamera(CameraUpdateFactory.NewBounds(Australia, 30));
-            */
-            map.MoveToRegion(new MapSpan(GetLocation(), 0.1, 0.1), true);
+                double myLat = position.Latitude;
+                double myLng = position.Longitude;
 
-            Polyline testRoute = new Polyline();
+                Position myPos = new Position(myLat, myLng);
 
-            requestRoute(GetLocation(),GetLocation());
+                Pin myLocation = new Pin
+                {
+                    Type = PinType.Place,
+                    Position = myPos,
+                    Label = "me",
+                    Address = "Brisbane"
+                };
+                map.Pins.Add(myLocation);
+                
+                Position anotherPos = new Position(-30, 160);
+
+                Pin secondPin = new Pin
+                {
+                    Type = PinType.Place,
+                    Position = anotherPos,
+                    Label = "me",
+                    Address = "Not Brisbane"
+                };
+                map.Pins.Add(secondPin);
+
+                Position[] posList = new Position[] { myPos, anotherPos };
+
+                int numPositions = 2;
+
+                double[] latList, lngList;
+                latList = new double[numPositions];
+                lngList = new double[numPositions];
+
+                for (int i = 0; i < numPositions; i++)
+                {
+                    latList[i] = (double)posList[i].Latitude;
+                    lngList[i] = (double)posList[i].Longitude;
+                }
+
+                Array.Sort(latList);
+                Array.Sort(lngList);
+
+                Position southWest = new Position(latList[0], lngList[0]);
+                Position northEast = new Position(latList[latList.Length - 1], lngList[lngList.Length - 1]);
+
+                Bounds myBounds = new Bounds(southWest, northEast);
+
+                /*************** Can't get camera update to set map bounds around positions ***************/
+
+                //CameraUpdate cu = new CameraUpdate();  //CameraUpdateFactory.NewBounds(myBounds, 5);
+
+                //map.MoveCamera(CameraUpdateFactory.NewBounds(myBounds, 0));
+
+                MapSpan mySpan = new MapSpan(myPos, 5, 5);
+                map.MoveToRegion(mySpan);
+            }
+
+            GetCurrentLatLng();
             
         }
-        
-        //Pressed Back Button
-        async void GoToOptionsPage(object sender, EventArgs args)
+
+
+
+            /*async Task<String> getLocation() {
+
+                var locator = CrossGeolocator.Current;
+
+                var position = await locator.GetPositionAsync(TimeSpan.FromSeconds(10));
+
+                String latStr = position.Latitude.ToString();
+                String lngStr = position.Longitude.ToString();
+
+                String displayString = ("Latitude: " + latStr + ", Longitude: " + lngStr);
+
+                return displayString;                
+            }
+
+            Task<String> locStr = getLocation();
+
+            System.Diagnostics.Debug.WriteLine(locStr);
+            
+        }*/
+
+                //Pressed Back Button
+                async void GoToOptionsPage(object sender, EventArgs args)
         {
             System.Diagnostics.Debug.WriteLine("Pressed");
 
@@ -98,3 +181,4 @@ namespace jogr
         }
     }
 }
+
