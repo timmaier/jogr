@@ -3,15 +3,24 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:maps="clr-namespace:Xamarin.Forms.GoogleMaps;assembly=Xamarin.Forms.GoogleMaps"
     x:Class="jogr.MapPage">
+<<<<<<< HEAD
 	<Grid VerticalOptions="Fill">
 		<maps:Map 
+=======
+	<Grid VerticalOptions="Fill" Padding="0">
+        <maps:Map VerticalOptions="Fill" HorizontalOptions="Fill"
+>>>>>>> 4784afbdfedbbcc38c6ffa33fc6a4b646f60e43a
             x:Name="MyMap"
             IsShowingUser="true"
             MapType="Street"
 			HasZoomEnabled="True"
 			
         />
+<<<<<<< HEAD
 
         <Button Clicked="GoToOptionsPage" HeightRequest ="55" WidthRequest="160" VerticalOptions="End" HorizontalOptions="Center" BackgroundColor="#315C6A" TextColor="White" Text="back." FontSize="45" FontFamily="{StaticResource NormalFont}" CornerRadius="15" />
+=======
+        <Button Clicked="GoToOptionsPage" WidthRequest="160" HeightRequest="60" HorizontalOptions="Center" VerticalOptions="End" BackgroundColor="#315C6A" TextColor="White" Text="back." FontSize="45" FontFamily="{StaticResource NormalFont}" CornerRadius="15" />
+>>>>>>> 4784afbdfedbbcc38c6ffa33fc6a4b646f60e43a
     </Grid>
 </ContentPage>
