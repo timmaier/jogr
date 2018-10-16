@@ -9,6 +9,7 @@
             IsShowingUser="true"
             MapType="Street"
 			HasZoomEnabled="True"
+			
         />
 
         <Button Clicked="GoToOptionsPage" WidthRequest="160" HorizontalOptions="Center" BackgroundColor="#315C6A" TextColor="White" Text="back." FontSize="45" FontFamily="{StaticResource NormalFont}" CornerRadius="15" />
