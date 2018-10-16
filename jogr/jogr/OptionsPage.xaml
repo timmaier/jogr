@@ -4,16 +4,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="jogr.OptionsPage">
     <ContentPage.Content>
-        <StackLayout BackgroundColor="White">
-			<Frame CornerRadius="20" BackgroundColor="#315C6A" Padding="20">
-				<!--<Label Text="ready.set." XAlign="Center" />-->
-				<Label Text="ready. set." XAlign="Center" TextColor="White" FontSize="40" FontFamily="{StaticResource NormalFont}"/>
-			</Frame>
-			<Label Text="Welcome to Options/Search page!"
+        <Grid VerticalOptions="Fill" BackgroundColor="White">
+            <Frame CornerRadius="25" HasShadow="False" BackgroundColor="#315C6A" VerticalOptions="Start" HeightRequest="40"></Frame>
+            <Label BackgroundColor="#315C6A" VerticalOptions="Start" Text="ready. set." HeightRequest="60" YAlign="Center" XAlign="Center" TextColor="White" FontSize="40" FontFamily="{StaticResource NormalFont}"/>
+            <Label Text="Welcome to Options/Search page!"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
 
-            <Button Clicked="GoToMapsPage" WidthRequest="120" HorizontalOptions="Center" BackgroundColor="#315C6A" TextColor="White" Text="go." FontSize="45"  FontFamily="{StaticResource NormalFont}" CornerRadius="15" />
-		</StackLayout>
+            <Frame Padding="10" BackgroundColor="White" HasShadow="False" HorizontalOptions="Center" VerticalOptions="End">
+                <Button Clicked="GoToMapsPage" BackgroundColor="#315C6A" VerticalOptions="Center" TextColor="White" Text="go." FontSize="60" FontFamily="{StaticResource NormalFont}" CornerRadius="25" />
+            </Frame>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>
