@@ -39,6 +39,9 @@ namespace jogr
             map.MoveCamera(CameraUpdateFactory.NewBounds(Australia, 30));
             */
             map.MoveToRegion(new MapSpan(GetLocation(), 0.1, 0.1), true);
+
+            Polyline testRoute = new Polyline();
+            
         }
         
         //Pressed Back Button
@@ -49,11 +52,21 @@ namespace jogr
             await Navigation.PopAsync();
         }
 
-        private Xamarin.Forms.GoogleMaps.Position GetLocation()
+        private Position GetLocation()
         {
-            Xamarin.Forms.GoogleMaps.Position myPosition = new Xamarin.Forms.GoogleMaps.Position(-27.4698, 153.0251);
+            Position myPosition = new Position(-27.4698, 153.0251);
 
             return myPosition;
+        }
+
+        private string requestRoute(Position startLocation, Position endLocation)
+        {
+            string requesturl = "https://maps.googleapis.com/maps/api/directions/json?origin=src_locn&destination=dest_lcn&key=keyGoesHere";
+
+            
+
+            //string JSONStringResponse = await FnHttpRequest(requesturl);
+            return "null";
         }
     }
 }

@@ -3,8 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:maps="clr-namespace:Xamarin.Forms.GoogleMaps;assembly=Xamarin.Forms.GoogleMaps"
     x:Class="jogr.MapPage">
-	<StackLayout VerticalOptions="StartAndExpand" Padding="30">
-		<maps:Map WidthRequest="320" HeightRequest="500"
+	<Grid VerticalOptions="Fill">
+		<maps:Map 
             x:Name="MyMap"
             IsShowingUser="true"
             MapType="Street"
@@ -12,6 +12,6 @@
 			
         />
 
-        <Button Clicked="GoToOptionsPage" WidthRequest="160" HorizontalOptions="Center" BackgroundColor="#315C6A" TextColor="White" Text="back." FontSize="45" FontFamily="{StaticResource NormalFont}" CornerRadius="15" />
-    </StackLayout>
+        <Button Clicked="GoToOptionsPage" HeightRequest ="55" WidthRequest="160" VerticalOptions="End" HorizontalOptions="Center" BackgroundColor="#315C6A" TextColor="White" Text="back." FontSize="45" FontFamily="{StaticResource NormalFont}" CornerRadius="15" />
+    </Grid>
 </ContentPage>
