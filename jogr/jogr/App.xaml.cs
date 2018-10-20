@@ -12,6 +12,9 @@ namespace jogr
         {
             InitializeComponent();
 
+            //Reduce the DNS refresh time
+            System.Net.ServicePointManager.DnsRefreshTimeout = 0;
+
             //Create a navigation parent to be able to switch between pages
             var navPage = new NavigationPage(new OptionsPage());
             NavigationPage.SetHasNavigationBar(this, false);

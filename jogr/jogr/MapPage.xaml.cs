@@ -13,6 +13,7 @@ using Xamarin.Forms.GoogleMaps;
 
 using Plugin.Geolocator;
 using Newtonsoft.Json;
+using Plugin.Connectivity;
 
 namespace jogr
 {
@@ -43,9 +44,11 @@ namespace jogr
 
             MapSpan mySpan = new MapSpan(myPos, 5, 5);
             map.MoveToRegion(mySpan);
+
             //Testing receiving a default route
             Position endpos = new Position(myPos.Latitude + 0.05, myPos.Longitude + 0.05);
-            //requestRoute(myPos, endpos);
+            //Request Route still being worked on
+            requestRoute(myPos, endpos);
 
             //This Function is not currently working
             //GoToLocationOnMap();            
@@ -149,9 +152,17 @@ namespace jogr
         //Request a test Route
         async private void requestRoute(Position startLocation, Position endLocation)
         {
+            if (CrossConnectivity.Current.IsConnected)
+            {
+                Console.Out.WriteLine("Connection Valid");
+            }
+            else
+            {
+                Console.Out.WriteLine("Connection Invalid");
+            }
             Console.Out.WriteLine("Try Requesting");
-            string apiKey = "AlzaSyB4mMK5O9BvbM5c5__elRJesoGVdWN16io";
-            string requesturl = "https://maps.googleapis.com/maps/api/directions/json?origin=" + startLocation.Latitude.ToString() + "," + startLocation.Longitude.ToString() + "&destination=" + endLocation.Latitude.ToString() + "," + endLocation.Longitude.ToString() + "&key =" + apiKey;
+            string apiKey = "AIzaSyBj3FmgND9IRoLFfh25eiE2x6Hg37uzDg4";
+            string requesturl = "https://maps.googleapis.com/maps/api/directions/json?origin=" + startLocation.Latitude.ToString() + "," + startLocation.Longitude.ToString() + "&destination=" + endLocation.Latitude.ToString() + "," + endLocation.Longitude.ToString() + "&key=" + apiKey;
 
             //Test for exceptions
             string strException = "-1";
@@ -160,6 +171,7 @@ namespace jogr
 
             if (strJSONDirectionResponse != strException)
             {
+
                 //Mark source and destination on map
                 Pin startloc = new Pin
                 {
@@ -176,6 +188,17 @@ namespace jogr
                 };
                 map.Pins.Add(endloc);
             }
+            else
+            {
+                Console.Out.WriteLine("Error Returned");
+                return;
+            }
+            /*
+             * NEED TO CHECK IF THE RETURNED JSON IS AN ERROR ONE
+             * IF IT IS AN ERROR, RESEND THE REQUEST, AND DON'T
+             * PROCEED WITH THE FUNCTION
+             * /
+
             //Convert Json to a class
             var objRoutes = JsonConvert.DeserializeObject<googledirectionclass>(strJSONDirectionResponse);
 
@@ -183,20 +206,18 @@ namespace jogr
             string encodedPoints = objRoutes.routes[0].overview_polyline.points;
             var lstDecodedPoints = FnDecodePolylinePoints(encodedPoints);
 
-            //Create polylines
+            Console.Out.WriteLine("Latitude: " + lstDecodedPoints[0].Latitude + ", Longitude:" +lstDecodedPoints[0].Longitude);
+            
+
             Xamarin.Forms.GoogleMaps.Polyline polylineoption = new Xamarin.Forms.GoogleMaps.Polyline();
+
+            polylineoption.StrokeWidth = 10f;
+            polylineoption.StrokeColor = Color.Red;
+
             for (int i = 0; i < lstDecodedPoints.Count; i++)
                 polylineoption.Positions.Add(lstDecodedPoints[i]);
             //Add polyline to map
             map.Polylines.Add(polylineoption);
-
-            //Convert list of encoded points to array of ltlng type
-            /*var ltLngPoints = new LatLng[lstDecodedPoints.Count];
-            int index = 0;
-            foreach(MyLocationButtonClickedEventArgs loc in lstDecodedPoints)
-            {
-                latLngPoints[index++] = new Latlng(loc.lat, loc.lng);
-            }*/
 
             //--TASKS--
 
@@ -205,15 +226,16 @@ namespace jogr
             async Task<string> FnHttpRequest(string strUri)
             {
                 webclient = new WebClient();
-                string strResultData;
+                string strResultData = "";
                 try
                 {
                     strResultData = await webclient.DownloadStringTaskAsync(new Uri(strUri));
-                    Console.WriteLine(strResultData);
+                    Console.Out.WriteLine("Results: " + strResultData);
                 }
-                catch
+                catch (Exception ex)
                 {
                     strResultData = strException;
+                    Console.Out.WriteLine("Exception: " + ex);
                 }
                 finally
                 {
@@ -316,12 +338,11 @@ namespace jogr
     }
 
     //Google Directions Classes
-
     public class googledirectionclass
     {
-        public string status { get; set; }
         public Geocoded_Waypoints[] geocoded_waypoints { get; set; }
         public Route[] routes { get; set; }
+        public string status { get; set; }
     }
 
     public class Geocoded_Waypoints
@@ -333,30 +354,19 @@ namespace jogr
 
     public class Route
     {
-        public string summary { get; set; }
-        public Leg[] legs { get; set; }
-        public string copyrights { get; set; }
-        public Overview_Polyline overview_polyline { get; set; }
-        public object[] warnings { get; set; }
-        public int[] waypoint_order { get; set; }
         public Bounds bounds { get; set; }
-    }
-
-    public class Overview_Polyline
-    {
-        public string points { get; set; }
+        public string copyrights { get; set; }
+        public Leg[] legs { get; set; }
+        public Overview_Polyline overview_polyline { get; set; }
+        public string summary { get; set; }
+        public object[] warnings { get; set; }
+        public object[] waypoint_order { get; set; }
     }
 
     public class Bounds
     {
-        public Southwest southwest { get; set; }
         public Northeast northeast { get; set; }
-    }
-
-    public class Southwest
-    {
-        public float lat { get; set; }
-        public float lng { get; set; }
+        public Southwest southwest { get; set; }
     }
 
     public class Northeast
@@ -365,33 +375,40 @@ namespace jogr
         public float lng { get; set; }
     }
 
-    public class Leg
+    public class Southwest
     {
-        public Step[] steps { get; set; }
-        public Duration duration { get; set; }
-        public Distance distance { get; set; }
-        public Start_Location start_location { get; set; }
-        public End_Location end_location { get; set; }
-        public string start_address { get; set; }
-        public string end_address { get; set; }
+        public float lat { get; set; }
+        public float lng { get; set; }
     }
 
-    public class Duration
+    public class Overview_Polyline
     {
-        public int value { get; set; }
-        public string text { get; set; }
+        public string points { get; set; }
+    }
+
+    public class Leg
+    {
+        public Distance distance { get; set; }
+        public Duration duration { get; set; }
+        public string end_address { get; set; }
+        public End_Location end_location { get; set; }
+        public string start_address { get; set; }
+        public Start_Location start_location { get; set; }
+        public Step[] steps { get; set; }
+        public object[] traffic_speed_entry { get; set; }
+        public object[] via_waypoint { get; set; }
     }
 
     public class Distance
     {
-        public int value { get; set; }
         public string text { get; set; }
+        public int value { get; set; }
     }
 
-    public class Start_Location
+    public class Duration
     {
-        public float lat { get; set; }
-        public float lng { get; set; }
+        public string text { get; set; }
+        public int value { get; set; }
     }
 
     public class End_Location
@@ -400,21 +417,34 @@ namespace jogr
         public float lng { get; set; }
     }
 
-    public class Step
-    {
-        public string travel_mode { get; set; }
-        public Start_Location1 start_location { get; set; }
-        public End_Location1 end_location { get; set; }
-        public Polyline polyline { get; set; }
-        public Duration1 duration { get; set; }
-        public string html_instructions { get; set; }
-        public Distance1 distance { get; set; }
-    }
-
-    public class Start_Location1
+    public class Start_Location
     {
         public float lat { get; set; }
         public float lng { get; set; }
+    }
+
+    public class Step
+    {
+        public Distance1 distance { get; set; }
+        public Duration1 duration { get; set; }
+        public End_Location1 end_location { get; set; }
+        public string html_instructions { get; set; }
+        public Polyline polyline { get; set; }
+        public Start_Location1 start_location { get; set; }
+        public string travel_mode { get; set; }
+        public string maneuver { get; set; }
+    }
+
+    public class Distance1
+    {
+        public string text { get; set; }
+        public int value { get; set; }
+    }
+
+    public class Duration1
+    {
+        public string text { get; set; }
+        public int value { get; set; }
     }
 
     public class End_Location1
@@ -428,17 +458,10 @@ namespace jogr
         public string points { get; set; }
     }
 
-    public class Duration1
+    public class Start_Location1
     {
-        public int value { get; set; }
-        public string text { get; set; }
+        public float lat { get; set; }
+        public float lng { get; set; }
     }
-
-    public class Distance1
-    {
-        public int value { get; set; }
-        public string text { get; set; }
-    }
-
 }
 
