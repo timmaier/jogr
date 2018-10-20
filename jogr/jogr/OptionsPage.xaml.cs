@@ -13,6 +13,8 @@ namespace jogr
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class OptionsPage : ContentPage
 	{
+        public double DISTANCE;
+
         public OptionsPage ()
 		{
 			InitializeComponent ();
@@ -38,9 +40,10 @@ namespace jogr
         void OnSliderValueChanged(object sender, ValueChangedEventArgs args)
         {
             double value = args.NewValue;
-            distance.Text = String.Format("{0}km*", value);
-            double timestamp = value * 6;
-            double kilojoulesstamp = value * 105;
+            DISTANCE = value;
+            distance.Text = String.Format("{0}km*", DISTANCE);
+            double timestamp = DISTANCE * 6;
+            double kilojoulesstamp = DISTANCE * 105;
             time.Text = String.Format("{0}min*", timestamp);
             kilojoules.Text = String.Format("{0}kJ*", kilojoulesstamp);
         }
