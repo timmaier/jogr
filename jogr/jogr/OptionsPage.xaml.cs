@@ -33,5 +33,17 @@ namespace jogr
                 Console.WriteLine("MyStackTrace: {0}", ex.ToString());
             }
         }
-	}
+
+        // Minor estimation calculations for time and kilojoules burned using distance defined
+        void OnSliderValueChanged(object sender, ValueChangedEventArgs args)
+        {
+            double value = args.NewValue;
+            distance.Text = String.Format("{0}km*", value);
+            double timestamp = value * 6;
+            double kilojoulesstamp = value * 105;
+            time.Text = String.Format("{0}min*", timestamp);
+            kilojoules.Text = String.Format("{0}kJ*", kilojoulesstamp);
+        }
+
+    }
 }
