@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Plugin.Permissions;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace jogr
