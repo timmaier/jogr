@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using System.Collections.Specialized;
 using System.Net;
+using System.IO;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -32,6 +33,20 @@ namespace jogr
             //Reference the map component
             map = (Map)MyMap;
 
+            //Customize Map
+            map.MapType = MapType.Street;
+            map.IsTrafficEnabled = false;
+            /*
+            var assembly = typeof("<ContentPageName>").GetTypeInfo().Assembly;
+            Stream stream = assembly.GetManifestResourceStream("CustomMap.json");
+            using (var reader = new System.IO.StreamReader(stream))
+            {
+                var json = reader.ReadToEnd();
+                var data = JsonConvert.DeserializeObject<Model>(json);
+            }
+
+            map.MapStyle = MapStyle.FromJson(customMapStyle());
+            */
             Position myPos = GetLocation();
             Pin myLocation = new Pin
             {
@@ -50,7 +65,7 @@ namespace jogr
             Position waypoint2 = new Position(myPos.Latitude + 0.005, myPos.Longitude + 0.005);
             Position waypoint3 = new Position(myPos.Latitude, myPos.Longitude + 0.005);
             //Request Route still being worked on
-            requestRoute(myPos, myPos, waypoint1, waypoint2, waypoint3);
+//            requestRoute(myPos, myPos, waypoint1, waypoint2, waypoint3);
 
             //This Function is not currently working
             //GoToLocationOnMap();            
@@ -144,7 +159,6 @@ namespace jogr
             await Navigation.PopAsync();
         }
 
-
         //Get Hard Coded Location
         private Position GetLocation()
         {
@@ -219,7 +233,7 @@ namespace jogr
 
             Xamarin.Forms.GoogleMaps.Polyline polylineoption = new Xamarin.Forms.GoogleMaps.Polyline();
 
-            polylineoption.StrokeWidth = 8f;
+            polylineoption.StrokeWidth = 6f;
             polylineoption.StrokeColor = Color.FromHex("#315C6A");
 
             for (int i = 0; i < lstDecodedPoints.Count; i++)
