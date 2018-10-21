@@ -46,9 +46,11 @@ namespace jogr
             map.MoveToRegion(mySpan);
 
             //Testing receiving a default route
-            Position endpos = new Position(myPos.Latitude + 0.05, myPos.Longitude + 0.05);
+            Position waypoint1 = new Position(myPos.Latitude + 0.005, myPos.Longitude);
+            Position waypoint2 = new Position(myPos.Latitude + 0.005, myPos.Longitude + 0.005);
+            Position waypoint3 = new Position(myPos.Latitude, myPos.Longitude + 0.005);
             //Request Route still being worked on
-            requestRoute(myPos, endpos);
+            requestRoute(myPos, myPos, waypoint1, waypoint2, waypoint3);
 
             //This Function is not currently working
             //GoToLocationOnMap();            
@@ -133,6 +135,7 @@ namespace jogr
             //map.MoveCamera(CameraUpdateFactory.NewBounds(myBounds, 0));
         }
 
+
         //Pressed Back Button
         async void GoToOptionsPage(object sender, EventArgs args)
         {
@@ -140,6 +143,7 @@ namespace jogr
 
             await Navigation.PopAsync();
         }
+
 
         //Get Hard Coded Location
         private Position GetLocation()
@@ -149,8 +153,9 @@ namespace jogr
             return myPosition;
         }
 
+
         //Request a test Route
-        async private void requestRoute(Position startLocation, Position endLocation)
+        async private void requestRoute(Position startLocation, Position endLocation, Position waypoint1, Position waypoint2, Position waypoint3)
         {
             if (CrossConnectivity.Current.IsConnected)
             {
@@ -162,7 +167,8 @@ namespace jogr
             }
             Console.Out.WriteLine("Try Requesting");
             string apiKey = "AIzaSyBj3FmgND9IRoLFfh25eiE2x6Hg37uzDg4";
-            string requesturl = "https://maps.googleapis.com/maps/api/directions/json?origin=" + startLocation.Latitude.ToString() + "," + startLocation.Longitude.ToString() + "&destination=" + endLocation.Latitude.ToString() + "," + endLocation.Longitude.ToString() + "&key=" + apiKey;
+            string requesturl = "https://maps.googleapis.com/maps/api/directions/json?"+ "mode=walking" + "&units=metric" + "&origin=" + startLocation.Latitude.ToString() + "," + startLocation.Longitude.ToString() + "&destination=" + endLocation.Latitude.ToString() + "," + endLocation.Longitude.ToString() 
+                + "&waypoints=optimize:true|" + waypoint1.Latitude.ToString() + "," + waypoint1.Longitude.ToString() + "|" + waypoint2.Latitude.ToString() + "," + waypoint2.Longitude.ToString() + "|" + waypoint3.Latitude.ToString() + "," + waypoint3.Longitude.ToString()  + "&key=" + apiKey;
 
             //Test for exceptions
             string strException = "-1";
@@ -193,11 +199,13 @@ namespace jogr
                 Console.Out.WriteLine("Error Returned");
                 return;
             }
+
+
             /*
              * NEED TO CHECK IF THE RETURNED JSON IS AN ERROR ONE
              * IF IT IS AN ERROR, RESEND THE REQUEST, AND DON'T
              * PROCEED WITH THE FUNCTION
-             * /
+             */
 
             //Convert Json to a class
             var objRoutes = JsonConvert.DeserializeObject<googledirectionclass>(strJSONDirectionResponse);
