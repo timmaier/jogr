@@ -219,8 +219,8 @@ namespace jogr
 
             Xamarin.Forms.GoogleMaps.Polyline polylineoption = new Xamarin.Forms.GoogleMaps.Polyline();
 
-            polylineoption.StrokeWidth = 10f;
-            polylineoption.StrokeColor = Color.Red;
+            polylineoption.StrokeWidth = 8f;
+            polylineoption.StrokeColor = Color.FromHex("#315C6A");
 
             for (int i = 0; i < lstDecodedPoints.Count; i++)
                 polylineoption.Positions.Add(lstDecodedPoints[i]);
