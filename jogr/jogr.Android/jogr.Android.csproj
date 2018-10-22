@@ -90,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\Bauhaus93-Regular.ttf" />
+    <EmbeddedResource Include="CustomMap.json" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml">
