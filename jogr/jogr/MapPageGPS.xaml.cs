@@ -30,12 +30,12 @@ namespace jogr
 
             async Task DisplayRoutes()
             {
-                InitializeComponent();
+                //InitializeComponent();
                 NavigationPage.SetHasNavigationBar(this, false);
 
                 //Reference the map component
-                map = (Map)MyMap;
-
+                //map = (Map)MyMap;
+                    
                 //Customize Map
                 map.MapType = MapType.Street;
                 map.IsTrafficEnabled = false;
@@ -333,8 +333,6 @@ namespace jogr
                 }
                 return poly;
             }
-
-
         }
     }
 }

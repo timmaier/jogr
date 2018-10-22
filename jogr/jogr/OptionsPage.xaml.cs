@@ -41,11 +41,11 @@ namespace jogr
         {
             double value = args.NewValue;
             DISTANCE = value;
-            distance.Text = String.Format("{0}km*", DISTANCE);
+            distance.Text = String.Format("{0}km", DISTANCE);
             double timestamp = DISTANCE * 6;
             double kilojoulesstamp = DISTANCE * 105;
-            time.Text = String.Format("{0}min*", timestamp);
-            kilojoules.Text = String.Format("{0}kJ*", kilojoulesstamp);
+            time.Text = String.Format("{0:0}", timestamp);
+            kilojoules.Text = String.Format("{0}", (int) kilojoulesstamp);
         }
 
     }

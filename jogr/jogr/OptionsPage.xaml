@@ -6,7 +6,7 @@
     <ContentPage.Content>
         <Grid>
 			<Grid.RowDefinitions>
-				<RowDefinition Height="40"/>
+				<RowDefinition Height="50"/>
 				<RowDefinition/>
 				<RowDefinition/>
 				<RowDefinition/>
@@ -18,69 +18,57 @@
 				<ColumnDefinition/>
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
-
-			<Frame Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0" CornerRadius="25" HasShadow="False" BackgroundColor="#315C6A" VerticalOptions="End" HeightRequest="20"></Frame>
-			<Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0" BackgroundColor="#315C6A" VerticalOptions="Start" HeightRequest="20" YAlign="Center" XAlign="Center" TextColor="White" FontSize="20" FontFamily="{StaticResource NormalFont}"/>
-			<Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0" BackgroundColor="Transparent" VerticalOptions="Start" Text="ready. set." HeightRequest="40" YAlign="Center" XAlign="Center" TextColor="White" FontSize="20" FontFamily="{StaticResource NormalFont}"/>
-
-			<Grid Padding="20,0,0,0" Grid.Row="1" Grid.Column="0">
-				<Grid.RowDefinitions>
-					<RowDefinition/>
-					<RowDefinition/>
-					<RowDefinition/>
-				</Grid.RowDefinitions>
-
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition/>
-				</Grid.ColumnDefinitions>
-				
-				<Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Time:"  VerticalOptions="Start" HorizontalOptions="Start"></Label>
-				<Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Kilometers:" VerticalOptions="Center" HorizontalOptions="Start"></Label>
-				<Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Kilojoules:" VerticalOptions="End" HorizontalOptions="Start"></Label>
-			</Grid>
 			
-			<!-- Padding (Left,Top,Right,Bottom) -->
-			<Grid Padding="0,0,20,0" Grid.Row="1" Grid.Column="1">
-				<Grid.RowDefinitions>
-					<RowDefinition/>
-					<RowDefinition/>
-					<RowDefinition/>
-				</Grid.RowDefinitions>
+			<!-- Reference Padding (Left,Top,Right,Bottom) -->
 
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition/>
-				</Grid.ColumnDefinitions>
-
-				<Label x:Name="time" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="0mins*"  VerticalOptions="Start" HorizontalOptions="End"></Label>
-				<Label x:Name="distance" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="0km*" VerticalOptions="Center" HorizontalOptions="End"></Label>
-				<Label x:Name="kilojoules" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="0kJ*" VerticalOptions="End" HorizontalOptions="End"></Label>
-			</Grid>
-			
-			<BoxView Margin="20" CornerRadius="5" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#78CDF2" TranslationY="30" HeightRequest="2" VerticalOptions="End"  HorizontalOptions="FillAndExpand"/>
-
-			
-			<!-- Intensity Box -->
-			<Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Padding="20,10,20,0">
-				<Label Text="intensity" Rotation="-27" VerticalOptions="Start" TranslationY="15" TranslationX="-8" HorizontalOptions="Center"/>
-				<Image Source="intensity.png"/>
-				<Slider TranslationY="-55" Rotation="-27" VerticalOptions="End" ThumbColor="#315C6A" MaximumTrackColor="Transparent" MinimumTrackColor="Transparent"
-					Maximum="9"
-					Minimum="1" />
-			</Grid>
-
-			<BoxView Margin="20" CornerRadius="5" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#78CDF2" TranslationY="30" HeightRequest="2" VerticalOptions="End"  HorizontalOptions="FillAndExpand"/>
+			<Frame  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Padding="20,0,0,0" BackgroundColor="Transparent">
+				<Label HorizontalOptions="Start" VerticalOptions="Start" Text="ready." TextColor="#315C6A" FontSize="35" FontFamily="{StaticResource NormalFont}"></Label>
+			</Frame>
+			<BoxView Margin="20" CornerRadius="5" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#d63f35" HeightRequest="3" VerticalOptions="Start" TranslationY="25" HorizontalOptions="FillAndExpand"/>
 
 			
 			<!-- Distance Box -->
-			<Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="1" Padding="20,10,20,0">
-				<Label Text="distance" VerticalOptions="Start" HorizontalOptions="Center"/>
-				<Image Source="distance.png"/>
-				<Slider ValueChanged="OnSliderValueChanged" VerticalOptions="End" ThumbColor="#315C6A" MaximumTrackColor="Black" MinimumTrackColor="#D63F35"
+			<Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="1" Padding="20,0,20,0">
+				<Label Text="distance" TextColor="Black" FontSize="35" FontAttributes="Bold" VerticalOptions="Start" HorizontalOptions="Center"/>
+				<Image Source=""/>
+
+				<Slider ThumbImage="slider.png" WidthRequest="15" HeightRequest="40" TranslationY="15" ValueChanged="OnSliderValueChanged" VerticalOptions="End" ThumbColor="#315C6A" MaximumTrackColor="Black" MinimumTrackColor="#D63F35"
 					Maximum="10"
-					Minimum="0" />	
+					Minimum="0" />
+
+				<Label x:Name="distance" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="0km" FontSize="Large" VerticalOptions="Center" HorizontalOptions="Center"></Label>
 			</Grid>
 
-			<BoxView Margin="20" CornerRadius="5" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#78CDF2" TranslationY="30" HeightRequest="2" VerticalOptions="End"  HorizontalOptions="FillAndExpand"/>
+
+
+
+			<Frame  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Padding="20,0,0,0" BackgroundColor="Transparent">
+				<Label HorizontalOptions="Start" VerticalOptions="End" Text="set." TextColor="#315C6A" FontSize="35" FontFamily="{StaticResource NormalFont}"></Label>
+			</Frame>
+			<BoxView Margin="20" CornerRadius="5" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#d63f35" HeightRequest="3" VerticalOptions="End" TranslationY="25" HorizontalOptions="FillAndExpand"/>
+			<!-- Parameters Box -->
+			<Grid Grid.Row="4" Grid.Column="0" BackgroundColor="Transparent" Grid.ColumnSpan="2" Grid.RowSpan="1" Padding="20,10,20,0">
+				<Frame HasShadow="False" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Margin="0" BackgroundColor="#D4D4D4" CornerRadius="15">
+					<Label Text="time" FontSize="Large" TextColor="#C00303" VerticalOptions="Start" HorizontalOptions="Center" TranslationY="-10"/>
+				</Frame>
+				<Frame HasShadow="False" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" BackgroundColor="Transparent" CornerRadius="15">
+					<Label x:Name="time" Text="0" FontAttributes="Bold" FontSize="50" VerticalOptions="Center" HorizontalOptions="Center"/>
+				</Frame>
+				<Label Text="(estimated)" VerticalOptions="End" HorizontalOptions="Center" TranslationY="-10"/>
+
+
+				<Frame HasShadow="False" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" BackgroundColor="#D4D4D4" CornerRadius="15">
+					<Label FontSize="Large" TextColor="#C00303" Text="kJ" VerticalOptions="Start" HorizontalOptions="Center" TranslationY="-10"></Label>
+				</Frame>
+				<Frame HasShadow="False" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" BackgroundColor="Transparent" CornerRadius="15">
+					<Label x:Name="kilojoules" Text="0" FontAttributes="Bold" FontSize="50" VerticalOptions="Center" HorizontalOptions="Center"></Label>
+				</Frame>
+				<Label Grid.Column="1" Text="(estimated)" VerticalOptions="End" HorizontalOptions="Center" TranslationY="-10"/>
+			</Grid>
+
+			<BoxView Margin="20" CornerRadius="5" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#d63f35" HeightRequest="3" VerticalOptions="End" TranslationY="35" HorizontalOptions="FillAndExpand"/>
+
+
 
 			<Grid BackgroundColor="Transparent" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Padding="20,10,20,10">
 				<Grid.RowDefinitions>
