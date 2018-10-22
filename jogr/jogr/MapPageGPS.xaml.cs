@@ -26,7 +26,7 @@ namespace jogr
 
         //Constructor
         public MapPageGPS()
-        {            
+        {
 
             async Task DisplayRoutes()
             {
@@ -62,13 +62,13 @@ namespace jogr
                 };
                 map.Pins.Add(myLocation);
 
-                MapSpan mySpan = new MapSpan(myPos, 10, 10);
+                MapSpan mySpan = new MapSpan(myPos, 20, 20);
                 map.MoveToRegion(mySpan);
 
                 //Testing receiving a default route
-                Position waypoint1 = new Position(myPos.Latitude + 0.005, myPos.Longitude);
-                Position waypoint2 = new Position(myPos.Latitude + 0.005, myPos.Longitude + 0.005);
-                Position waypoint3 = new Position(myPos.Latitude, myPos.Longitude + 0.005);
+                Position waypoint1 = ReturnRandomWaypoint(myPos);
+                Position waypoint2 = ReturnRandomWaypoint(waypoint1);
+                Position waypoint3 = ReturnRandomWaypoint(waypoint2);
                 //Request Route still being worked on
                 requestRoute(myPos, myPos, waypoint1, waypoint2, waypoint3);
             }
@@ -77,6 +77,20 @@ namespace jogr
             //This Function is not currently working
             //GoToLocationOnMap();            
         }
+
+        public Position ReturnRandomWaypoint(Position origin)
+        {
+            double GetRandomDouble(double minimum, double maximum)
+            {
+                Random random = new Random();
+                return random.NextDouble() * (maximum - minimum) + minimum;
+            }
+
+            Position randWaypoint = new Position(origin.Latitude + GetRandomDouble(-0.005, 0.005), origin.Longitude + GetRandomDouble(-0.005, 0.005));
+
+            return randWaypoint;
+        }
+
 
         async void GoToLocationOnMap()
         {
