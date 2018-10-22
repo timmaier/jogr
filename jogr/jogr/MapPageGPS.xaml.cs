@@ -19,44 +19,61 @@ using Plugin.Connectivity;
 namespace jogr
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class MapPage : ContentPage
+    public partial class MapPageGPS : ContentPage
     {
         //Get a reference to the map component
         public Map map;
 
         //Constructor
-        public MapPage()
-        {
-            InitializeComponent();
-            NavigationPage.SetHasNavigationBar(this, false);
+        public MapPageGPS()
+        {            
 
-            //Reference the map component
-            map = (Map)MyMap;
-
-            //Customize Map
-            map.MapType = MapType.Street;
-            map.IsTrafficEnabled = false;
-
-            Position myPos = GetLocation();
-            Pin myLocation = new Pin
+            async Task DisplayRoutes()
             {
-                Type = PinType.Generic,
-                Position = myPos,
-                Label = "me",
-                Address = "Brisbane"
-            };
-            map.Pins.Add(myLocation);
+                InitializeComponent();
+                NavigationPage.SetHasNavigationBar(this, false);
 
-            MapSpan mySpan = new MapSpan(myPos, 5, 5);
-            map.MoveToRegion(mySpan);
+                //Reference the map component
+                map = (Map)MyMap;
 
-            //Testing receiving a default route
-            Position waypoint1 = new Position(myPos.Latitude + 0.005, myPos.Longitude);
-            Position waypoint2 = new Position(myPos.Latitude + 0.005, myPos.Longitude + 0.005);
-            Position waypoint3 = new Position(myPos.Latitude, myPos.Longitude + 0.005);
-            //Request Route still being worked on
-            requestRoute(myPos, myPos, waypoint1, waypoint2, waypoint3);
+                //Customize Map
+                map.MapType = MapType.Street;
+                map.IsTrafficEnabled = false;
 
+                Plugin.Geolocator.Abstractions.Position myGeoPos = null;
+                try
+                {
+                    var locator = CrossGeolocator.Current;
+                    locator.DesiredAccuracy = 100;
+                    myGeoPos = await locator.GetPositionAsync(TimeSpan.FromSeconds(1));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("There was an error: " + ex);
+                }
+
+                Position myPos = new Position(myGeoPos.Latitude, myGeoPos.Longitude);
+                Pin myLocation = new Pin
+                {
+                    Type = PinType.Generic,
+                    Position = myPos,
+                    Label = "me",
+                    Address = "Brisbane"
+                };
+                map.Pins.Add(myLocation);
+
+                MapSpan mySpan = new MapSpan(myPos, 5, 5);
+                map.MoveToRegion(mySpan);
+
+                //Testing receiving a default route
+                Position waypoint1 = new Position(myPos.Latitude + 0.005, myPos.Longitude);
+                Position waypoint2 = new Position(myPos.Latitude + 0.005, myPos.Longitude + 0.005);
+                Position waypoint3 = new Position(myPos.Latitude, myPos.Longitude + 0.005);
+                //Request Route still being worked on
+                requestRoute(myPos, myPos, waypoint1, waypoint2, waypoint3);
+            }
+
+            DisplayRoutes();
             //This Function is not currently working
             //GoToLocationOnMap();            
         }
@@ -96,7 +113,7 @@ namespace jogr
 
             MapSpan mySpan = new MapSpan(myPos, 5, 5);
             map.MoveToRegion(mySpan);
-   
+
         }
 
 
@@ -130,8 +147,8 @@ namespace jogr
             }
             Console.Out.WriteLine("Try Requesting");
             string apiKey = "AIzaSyBj3FmgND9IRoLFfh25eiE2x6Hg37uzDg4";
-            string requesturl = "https://maps.googleapis.com/maps/api/directions/json?"+ "mode=walking" + "&units=metric" + "&origin=" + startLocation.Latitude.ToString() + "," + startLocation.Longitude.ToString() + "&destination=" + endLocation.Latitude.ToString() + "," + endLocation.Longitude.ToString() 
-                + "&waypoints=optimize:true|" + waypoint1.Latitude.ToString() + "," + waypoint1.Longitude.ToString() + "|" + waypoint2.Latitude.ToString() + "," + waypoint2.Longitude.ToString() + "|" + waypoint3.Latitude.ToString() + "," + waypoint3.Longitude.ToString()  + "&key=" + apiKey;
+            string requesturl = "https://maps.googleapis.com/maps/api/directions/json?" + "mode=walking" + "&units=metric" + "&origin=" + startLocation.Latitude.ToString() + "," + startLocation.Longitude.ToString() + "&destination=" + endLocation.Latitude.ToString() + "," + endLocation.Longitude.ToString()
+                + "&waypoints=optimize:true|" + waypoint1.Latitude.ToString() + "," + waypoint1.Longitude.ToString() + "|" + waypoint2.Latitude.ToString() + "," + waypoint2.Longitude.ToString() + "|" + waypoint3.Latitude.ToString() + "," + waypoint3.Longitude.ToString() + "&key=" + apiKey;
 
             //Test for exceptions
             string strException = "-1";
@@ -177,18 +194,32 @@ namespace jogr
             string encodedPoints = objRoutes.routes[0].overview_polyline.points;
             var lstDecodedPoints = FnDecodePolylinePoints(encodedPoints);
 
-            Console.Out.WriteLine("Latitude: " + lstDecodedPoints[0].Latitude + ", Longitude:" +lstDecodedPoints[0].Longitude);
-            
+            Console.Out.WriteLine("Latitude: " + lstDecodedPoints[0].Latitude + ", Longitude:" + lstDecodedPoints[0].Longitude);
+
 
             Xamarin.Forms.GoogleMaps.Polyline polylineoption = new Xamarin.Forms.GoogleMaps.Polyline();
 
             polylineoption.StrokeWidth = 6f;
             polylineoption.StrokeColor = Color.FromHex("#315C6A");
+            double[] latList = new double[lstDecodedPoints.Count];
+            double[] lngList = new double[lstDecodedPoints.Count];
 
             for (int i = 0; i < lstDecodedPoints.Count; i++)
+            {
                 polylineoption.Positions.Add(lstDecodedPoints[i]);
+                latList[i] = lstDecodedPoints[i].Latitude;
+                lngList[i] = lstDecodedPoints[i].Longitude;
+            }
+
+            double latCentre, lngCentre;
+            latCentre = (latList.Max() + latList.Min()) / 2;
+            lngCentre = (lngList.Max() + lngList.Min()) / 2;
+            Position routeCentrePos = new Position(latCentre, lngCentre);
+
             //Add polyline to map
             map.Polylines.Add(polylineoption);
+            MapSpan routeSpan = new MapSpan(routeCentrePos, 0.02, 0.02);
+            map.MoveToRegion(routeSpan);
 
             //--TASKS--
 
@@ -275,164 +306,7 @@ namespace jogr
                 }
                 return poly;
             }
-
-
-            /*
-            HttpListener listener = new HttpListener();
-            listener.Prefixes.Add("https://maps.googleapis.com/maps/api/directions/");
-            WebRequest request = HttpWebRequest.Create(requesturl);
-
-            request.ContentType = "application/json";
-            request.Method = "GET";
-
-            //WebResponse response = request.GetResponse();
-
-/*
-            using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
-            {
-                if (response.StatusCode != HttpStatusCode.OK)
-                    Console.Out.WriteLine("Error Fetching Data. Server returned status code: {0}", response.StatusCode);
-                else
-                {
-                    Console.WriteLine("Response Body: {0}", response.GetResponseStream());
-                }
-            }*/
-
-
-
-            // https://maps.googleapis.com/maps/api/directions/ 
-            //mode=walking&origin=-27.4698,153.0251&destination=-27.4798,153.0251&key=AIzaSyB4mMK5O9BvbM5c5__eIRJesoGVdWN16io;
-            //waypoints=optimize:true|-27.4798,153.0251|via:-27.4768,153.0251|via:-27.4798,153.0251|
-            //units=metric
-            //string JSONStringResponse = await FnHttpRequest(requesturl);
         }
-    }
-
-    //Google Directions Classes
-    public class googledirectionclass
-    {
-        public Geocoded_Waypoints[] geocoded_waypoints { get; set; }
-        public Route[] routes { get; set; }
-        public string status { get; set; }
-    }
-
-    public class Geocoded_Waypoints
-    {
-        public string geocoder_status { get; set; }
-        public string place_id { get; set; }
-        public string[] types { get; set; }
-    }
-
-    public class Route
-    {
-        public Bounds bounds { get; set; }
-        public string copyrights { get; set; }
-        public Leg[] legs { get; set; }
-        public Overview_Polyline overview_polyline { get; set; }
-        public string summary { get; set; }
-        public object[] warnings { get; set; }
-        public object[] waypoint_order { get; set; }
-    }
-
-    public class Bounds
-    {
-        public Northeast northeast { get; set; }
-        public Southwest southwest { get; set; }
-    }
-
-    public class Northeast
-    {
-        public float lat { get; set; }
-        public float lng { get; set; }
-    }
-
-    public class Southwest
-    {
-        public float lat { get; set; }
-        public float lng { get; set; }
-    }
-
-    public class Overview_Polyline
-    {
-        public string points { get; set; }
-    }
-
-    public class Leg
-    {
-        public Distance distance { get; set; }
-        public Duration duration { get; set; }
-        public string end_address { get; set; }
-        public End_Location end_location { get; set; }
-        public string start_address { get; set; }
-        public Start_Location start_location { get; set; }
-        public Step[] steps { get; set; }
-        public object[] traffic_speed_entry { get; set; }
-        public object[] via_waypoint { get; set; }
-    }
-
-    public class Distance
-    {
-        public string text { get; set; }
-        public int value { get; set; }
-    }
-
-    public class Duration
-    {
-        public string text { get; set; }
-        public int value { get; set; }
-    }
-
-    public class End_Location
-    {
-        public float lat { get; set; }
-        public float lng { get; set; }
-    }
-
-    public class Start_Location
-    {
-        public float lat { get; set; }
-        public float lng { get; set; }
-    }
-
-    public class Step
-    {
-        public Distance1 distance { get; set; }
-        public Duration1 duration { get; set; }
-        public End_Location1 end_location { get; set; }
-        public string html_instructions { get; set; }
-        public Polyline polyline { get; set; }
-        public Start_Location1 start_location { get; set; }
-        public string travel_mode { get; set; }
-        public string maneuver { get; set; }
-    }
-
-    public class Distance1
-    {
-        public string text { get; set; }
-        public int value { get; set; }
-    }
-
-    public class Duration1
-    {
-        public string text { get; set; }
-        public int value { get; set; }
-    }
-
-    public class End_Location1
-    {
-        public float lat { get; set; }
-        public float lng { get; set; }
-    }
-
-    public class Polyline
-    {
-        public string points { get; set; }
-    }
-
-    public class Start_Location1
-    {
-        public float lat { get; set; }
-        public float lng { get; set; }
     }
 }
 
