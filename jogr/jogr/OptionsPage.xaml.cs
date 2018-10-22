@@ -28,7 +28,7 @@ namespace jogr
             System.Diagnostics.Debug.WriteLine("Pressed");
             try
             {
-                await Navigation.PushAsync(new MapPageGPS());
+                await Navigation.PushAsync(new MapPage());
             }
             catch (Exception ex)
             {

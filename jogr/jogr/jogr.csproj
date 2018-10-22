@@ -10,6 +10,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="CustomMap.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="CustomMap.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Plugin.Permissions" Version="3.0.0.12" />
     <PackageReference Include="Xam.Plugin.Connectivity" Version="3.2.0" />
@@ -20,9 +28,6 @@
 
   <ItemGroup>
     <EmbeddedResource Update="MapPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="MapPageGPS.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="OptionsPage.xaml">

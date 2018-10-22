@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Collections.Specialized;
 using System.Net;
 using System.IO;
+using System.Reflection;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -37,66 +38,70 @@ namespace jogr
             map.MapType = MapType.Street;
             map.IsTrafficEnabled = false;
 
-            Position myPos = GetLocation();
-            Pin myLocation = new Pin
+
+            //var assembly = IntrospectionExtensions.GetTypeInfo(typeof(LoadResourceText)).Assembly;
+
+            var assembly = IntrospectionExtensions.GetTypeInfo(typeof(MapStyleClass)).Assembly;
+            Stream stream = assembly.GetManifestResourceStream("jogr.CustomMap.json");
+            if (stream != null)
             {
-                Type = PinType.Generic,
-                Position = myPos,
-                Label = "me",
-                Address = "Brisbane"
-            };
-            map.Pins.Add(myLocation);
-
-            MapSpan mySpan = new MapSpan(myPos, 5, 5);
-            map.MoveToRegion(mySpan);
-
-            //Testing receiving a default route
-            Position waypoint1 = new Position(myPos.Latitude + 0.005, myPos.Longitude);
-            Position waypoint2 = new Position(myPos.Latitude + 0.005, myPos.Longitude + 0.005);
-            Position waypoint3 = new Position(myPos.Latitude, myPos.Longitude + 0.005);
-            //Request Route still being worked on
-            requestRoute(myPos, myPos, waypoint1, waypoint2, waypoint3);
-
-            //This Function is not currently working
-            //GoToLocationOnMap();            
-        }
-
-        async void GoToLocationOnMap()
-        {
-            Plugin.Geolocator.Abstractions.Position position = null;
-
-            try
-            {
-                var locator = CrossGeolocator.Current;
-                locator.DesiredAccuracy = 100;
-                position = await locator.GetPositionAsync(TimeSpan.FromSeconds(3));
+                string text = "";
+                using (var reader = new StreamReader(stream))
+                {
+                    text = reader.ReadToEnd();
+                    Console.Out.WriteLine("JSON Style: "+text);
+                    map.MapStyle = MapStyle.FromJson(text);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                System.Diagnostics.Debug.WriteLine("There was an error: " + ex);
+                Console.Out.WriteLine("Stream was empty");
             }
-            //--THERE IS AN ERROR WITH THIS LINE, 'position' IS NOT REFERENCING AN INSTANCE OF AN OBJECT--
-            string output = string.Format("Lat: {0}, Lng: {1}", position.Latitude, position.Longitude);
 
-            System.Diagnostics.Debug.WriteLine("My Lat and Long: " + output);
 
-            double myLat = position.Latitude;
-            double myLng = position.Longitude;
 
-            Position myPos = new Position(myLat, myLng);
+            //displayRoute();
 
-            Pin myLocation = new Pin
+
+            //Generate a route based on current location
+            async Task displayRoute()
             {
-                Type = PinType.Place,
-                Position = myPos,
-                Label = "me",
-                Address = "Brisbane"
-            };
-            map.Pins.Add(myLocation);
+                Plugin.Geolocator.Abstractions.Position myGeoPos = null;
+                try
+                {
+                    var locator = CrossGeolocator.Current;
+                    locator.DesiredAccuracy = 100;
+                    myGeoPos = await locator.GetPositionAsync(TimeSpan.FromSeconds(1));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("There was an error: " + ex);
+                }
 
-            MapSpan mySpan = new MapSpan(myPos, 5, 5);
-            map.MoveToRegion(mySpan);
-   
+                Position myPos = new Position(myGeoPos.Latitude, myGeoPos.Longitude);
+
+                Pin myLocation = new Pin
+                {
+                    Type = PinType.Generic,
+                    Position = myPos,
+                    Label = "me",
+                    Address = "Brisbane"
+                };
+                map.Pins.Add(myLocation);
+
+                MapSpan mySpan = new MapSpan(myPos, 5, 5);
+                map.MoveToRegion(mySpan);
+
+                //Testing receiving a default route
+                Position waypoint1 = new Position(myPos.Latitude + 0.005, myPos.Longitude);
+                Position waypoint2 = new Position(myPos.Latitude + 0.005, myPos.Longitude + 0.005);
+                Position waypoint3 = new Position(myPos.Latitude, myPos.Longitude + 0.005);
+                //Request Route still being worked on
+                requestRoute(myPos, myPos, waypoint1, waypoint2, waypoint3);
+
+                //This Function is not currently working
+                //GoToLocationOnMap();   
+            }
         }
 
 
@@ -108,7 +113,7 @@ namespace jogr
             await Navigation.PopAsync();
         }
 
-        //Get Hard Coded Location
+        //Get Hard Coded Location (Test Function)
         private Position GetLocation()
         {
             Position myPosition = new Position(-27.4698, 153.0251);
@@ -116,8 +121,7 @@ namespace jogr
             return myPosition;
         }
 
-
-        //Request a test Route
+        //Request a Route using Google Directions API
         async private void requestRoute(Position startLocation, Position endLocation, Position waypoint1, Position waypoint2, Position waypoint3)
         {
             if (CrossConnectivity.Current.IsConnected)
@@ -130,8 +134,8 @@ namespace jogr
             }
             Console.Out.WriteLine("Try Requesting");
             string apiKey = "AIzaSyBj3FmgND9IRoLFfh25eiE2x6Hg37uzDg4";
-            string requesturl = "https://maps.googleapis.com/maps/api/directions/json?"+ "mode=walking" + "&units=metric" + "&origin=" + startLocation.Latitude.ToString() + "," + startLocation.Longitude.ToString() + "&destination=" + endLocation.Latitude.ToString() + "," + endLocation.Longitude.ToString() 
-                + "&waypoints=optimize:true|" + waypoint1.Latitude.ToString() + "," + waypoint1.Longitude.ToString() + "|" + waypoint2.Latitude.ToString() + "," + waypoint2.Longitude.ToString() + "|" + waypoint3.Latitude.ToString() + "," + waypoint3.Longitude.ToString()  + "&key=" + apiKey;
+            string requesturl = "https://maps.googleapis.com/maps/api/directions/json?" + "mode=walking" + "&units=metric" + "&origin=" + startLocation.Latitude.ToString() + "," + startLocation.Longitude.ToString() + "&destination=" + endLocation.Latitude.ToString() + "," + endLocation.Longitude.ToString()
+                + "&waypoints=optimize:true|" + waypoint1.Latitude.ToString() + "," + waypoint1.Longitude.ToString() + "|" + waypoint2.Latitude.ToString() + "," + waypoint2.Longitude.ToString() + "|" + waypoint3.Latitude.ToString() + "," + waypoint3.Longitude.ToString() + "&key=" + apiKey;
 
             //Test for exceptions
             string strException = "-1";
@@ -177,8 +181,8 @@ namespace jogr
             string encodedPoints = objRoutes.routes[0].overview_polyline.points;
             var lstDecodedPoints = FnDecodePolylinePoints(encodedPoints);
 
-            Console.Out.WriteLine("Latitude: " + lstDecodedPoints[0].Latitude + ", Longitude:" +lstDecodedPoints[0].Longitude);
-            
+            Console.Out.WriteLine("Latitude: " + lstDecodedPoints[0].Latitude + ", Longitude:" + lstDecodedPoints[0].Longitude);
+
 
             Xamarin.Forms.GoogleMaps.Polyline polylineoption = new Xamarin.Forms.GoogleMaps.Polyline();
 
@@ -275,38 +279,32 @@ namespace jogr
                 }
                 return poly;
             }
-
-
-            /*
-            HttpListener listener = new HttpListener();
-            listener.Prefixes.Add("https://maps.googleapis.com/maps/api/directions/");
-            WebRequest request = HttpWebRequest.Create(requesturl);
-
-            request.ContentType = "application/json";
-            request.Method = "GET";
-
-            //WebResponse response = request.GetResponse();
-
-/*
-            using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
-            {
-                if (response.StatusCode != HttpStatusCode.OK)
-                    Console.Out.WriteLine("Error Fetching Data. Server returned status code: {0}", response.StatusCode);
-                else
-                {
-                    Console.WriteLine("Response Body: {0}", response.GetResponseStream());
-                }
-            }*/
-
-
-
-            // https://maps.googleapis.com/maps/api/directions/ 
-            //mode=walking&origin=-27.4698,153.0251&destination=-27.4798,153.0251&key=AIzaSyB4mMK5O9BvbM5c5__eIRJesoGVdWN16io;
-            //waypoints=optimize:true|-27.4798,153.0251|via:-27.4768,153.0251|via:-27.4798,153.0251|
-            //units=metric
-            //string JSONStringResponse = await FnHttpRequest(requesturl);
         }
     }
+
+    //Map Type classes
+
+    public class MapStyleClass
+    {
+        public MapStyleFeature[] Features { get; set; }
+    }
+
+    public class MapStyleFeature
+    {
+        public string featureType { get; set; }
+        public string elementType { get; set; }
+        public MapStylers[] stylers { get; set; }
+    }
+
+    public class MapStylers
+    {
+        public string visibility { get; set; }
+        public string color { get; set; }
+        public string saturation { get; set; }
+        public string hue { get; set; }
+        public string lightness { get; set; }
+    }
+
 
     //Google Directions Classes
     public class googledirectionclass
