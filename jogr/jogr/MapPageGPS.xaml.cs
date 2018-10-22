@@ -62,7 +62,7 @@ namespace jogr
                 };
                 map.Pins.Add(myLocation);
 
-                MapSpan mySpan = new MapSpan(myPos, 5, 5);
+                MapSpan mySpan = new MapSpan(myPos, 10, 10);
                 map.MoveToRegion(mySpan);
 
                 //Testing receiving a default route
@@ -190,41 +190,54 @@ namespace jogr
             //Convert Json to a class
             var objRoutes = JsonConvert.DeserializeObject<googledirectionclass>(strJSONDirectionResponse);
 
-            //Decode The Returned points
-            string encodedPoints = objRoutes.routes[0].overview_polyline.points;
-            var lstDecodedPoints = FnDecodePolylinePoints(encodedPoints);
-
-            Console.Out.WriteLine("Latitude: " + lstDecodedPoints[0].Latitude + ", Longitude:" + lstDecodedPoints[0].Longitude);
-
-
-            Xamarin.Forms.GoogleMaps.Polyline polylineoption = new Xamarin.Forms.GoogleMaps.Polyline();
-
-            polylineoption.StrokeWidth = 6f;
-            polylineoption.StrokeColor = Color.FromHex("#315C6A");
-            double[] latList = new double[lstDecodedPoints.Count];
-            double[] lngList = new double[lstDecodedPoints.Count];
-
-            for (int i = 0; i < lstDecodedPoints.Count; i++)
+            // Check for ZERO_RESULTS
+            if (objRoutes.status == "ZERO_RESULTS")
             {
-                polylineoption.Positions.Add(lstDecodedPoints[i]);
-                latList[i] = lstDecodedPoints[i].Latitude;
-                lngList[i] = lstDecodedPoints[i].Longitude;
+                Console.WriteLine("ROUTE STATUS: " + objRoutes.status);
+                await DisplayAlert("Alert", "Invalid Lat/Lng Values", "OK");
+                return;
+            } else
+            {
+                Console.WriteLine("ROUTE STATUS: " + objRoutes.status);
+                //Decode The Returned points
+                string encodedPoints = objRoutes.routes[0].overview_polyline.points;
+                var lstDecodedPoints = FnDecodePolylinePoints(encodedPoints);
+
+                Console.Out.WriteLine("Latitude: " + lstDecodedPoints[0].Latitude + ", Longitude:" + lstDecodedPoints[0].Longitude);
+
+
+                Xamarin.Forms.GoogleMaps.Polyline polylineoption = new Xamarin.Forms.GoogleMaps.Polyline();
+
+                polylineoption.StrokeWidth = 6f;
+                polylineoption.StrokeColor = Color.FromHex("#315C6A");
+                double[] latList = new double[lstDecodedPoints.Count];
+                double[] lngList = new double[lstDecodedPoints.Count];
+
+                for (int i = 0; i < lstDecodedPoints.Count; i++)
+                {
+                    polylineoption.Positions.Add(lstDecodedPoints[i]);
+                    latList[i] = lstDecodedPoints[i].Latitude;
+                    lngList[i] = lstDecodedPoints[i].Longitude;
+                }
+
+                double latCentre, lngCentre;
+                latCentre = (latList.Max() + latList.Min()) / 2;
+                lngCentre = (lngList.Max() + lngList.Min()) / 2;
+                Position routeCentrePos = new Position(latCentre, lngCentre);
+
+                //Add polyline to map
+                map.Polylines.Add(polylineoption);
+                MapSpan routeSpan = new MapSpan(routeCentrePos, 0.02, 0.02);
+                map.MoveToRegion(routeSpan);
+
+                //--TASKS--
+
+                //Request String
+                                
             }
 
-            double latCentre, lngCentre;
-            latCentre = (latList.Max() + latList.Min()) / 2;
-            lngCentre = (lngList.Max() + lngList.Min()) / 2;
-            Position routeCentrePos = new Position(latCentre, lngCentre);
-
-            //Add polyline to map
-            map.Polylines.Add(polylineoption);
-            MapSpan routeSpan = new MapSpan(routeCentrePos, 0.02, 0.02);
-            map.MoveToRegion(routeSpan);
-
-            //--TASKS--
-
-            //Request String
             WebClient webclient;
+
             async Task<string> FnHttpRequest(string strUri)
             {
                 webclient = new WebClient();
@@ -306,6 +319,8 @@ namespace jogr
                 }
                 return poly;
             }
+
+
         }
     }
 }
