@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:maps="clr-namespace:Xamarin.Forms.GoogleMaps;assembly=Xamarin.Forms.GoogleMaps"
+    x:Class="jogr.MapPageGPS">
+    <Grid VerticalOptions="Fill" Padding="0">
+        <maps:Map VerticalOptions="Fill" HorizontalOptions="Fill"
+            x:Name="MyMap"
+            IsShowingUser="true"
+            MapType="Street"
+			HasZoomEnabled="True"			
+        />
+        <Button Clicked="GoToOptionsPage" WidthRequest="160" HeightRequest="60" HorizontalOptions="Center" VerticalOptions="End" BackgroundColor="#315C6A" TextColor="White" Text="back." FontSize="45" FontFamily="{StaticResource NormalFont}" CornerRadius="15" />
+    </Grid>
+</ContentPage>
