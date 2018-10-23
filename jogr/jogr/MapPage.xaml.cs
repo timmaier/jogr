@@ -102,6 +102,8 @@ namespace jogr
                 //This Function is not currently working
                 //GoToLocationOnMap();   
             }
+
+            displayRoute();
         }
 
 
@@ -177,24 +179,50 @@ namespace jogr
             //Convert Json to a class
             var objRoutes = JsonConvert.DeserializeObject<googledirectionclass>(strJSONDirectionResponse);
 
-            //Decode The Returned points
-            string encodedPoints = objRoutes.routes[0].overview_polyline.points;
-            var lstDecodedPoints = FnDecodePolylinePoints(encodedPoints);
+            // Check for zero results case, and if no results alert the user
+            if (objRoutes.status == "ZERO_RESULTS")
+            {
+                await DisplayAlert("Alert", "Invalid Lat/Lng Values", "OK");
+                return;
+            }
+            else
+            {
+                //Decode The Returned points
+                string encodedPoints = objRoutes.routes[0].overview_polyline.points;
+                var lstDecodedPoints = FnDecodePolylinePoints(encodedPoints);
 
-            Console.Out.WriteLine("Latitude: " + lstDecodedPoints[0].Latitude + ", Longitude:" + lstDecodedPoints[0].Longitude);
+                Console.Out.WriteLine("Latitude: " + lstDecodedPoints[0].Latitude + ", Longitude:" + lstDecodedPoints[0].Longitude);
 
 
-            Xamarin.Forms.GoogleMaps.Polyline polylineoption = new Xamarin.Forms.GoogleMaps.Polyline();
+                Xamarin.Forms.GoogleMaps.Polyline polylineoption = new Xamarin.Forms.GoogleMaps.Polyline();
 
-            polylineoption.StrokeWidth = 6f;
-            polylineoption.StrokeColor = Color.FromHex("#315C6A");
+                polylineoption.StrokeWidth = 6f;
+                polylineoption.StrokeColor = Color.FromHex("#315C6A");
 
-            for (int i = 0; i < lstDecodedPoints.Count; i++)
-                polylineoption.Positions.Add(lstDecodedPoints[i]);
-            //Add polyline to map
-            map.Polylines.Add(polylineoption);
+                double[] latList = new double[lstDecodedPoints.Count];
+                double[] lngList = new double[lstDecodedPoints.Count];
 
-            //--TASKS--
+                for (int i = 0; i < lstDecodedPoints.Count; i++)
+                {
+                    polylineoption.Positions.Add(lstDecodedPoints[i]);
+                    latList[i] = lstDecodedPoints[i].Latitude;
+                    lngList[i] = lstDecodedPoints[i].Longitude;
+                }
+
+                double latCentre, lngCentre;
+                latCentre = (latList.Max() + latList.Min()) / 2;
+                lngCentre = (lngList.Max() + lngList.Min()) / 2;
+                Position routeCentrePos = new Position(latCentre, lngCentre);
+
+                //Add polyline to map
+                map.Polylines.Add(polylineoption);
+                MapSpan routeSpan = new MapSpan(routeCentrePos, 0.02, 0.02);
+                map.MoveToRegion(routeSpan);
+
+                //--TASKS--
+            }
+
+
 
             //Request String
             WebClient webclient;
