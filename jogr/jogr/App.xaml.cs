@@ -19,7 +19,6 @@ namespace jogr
             var navPage = new NavigationPage(new OptionsPage());
             NavigationPage.SetHasNavigationBar(this, false);
 
-
             //Start on the first page
             Application.Current.MainPage = navPage;
         }

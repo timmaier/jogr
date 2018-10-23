@@ -52,7 +52,7 @@ namespace jogr
                 using (var reader = new StreamReader(stream))
                 {
                     text = reader.ReadToEnd();
-                    Console.Out.WriteLine("JSON Style: "+text);
+                    Console.Out.WriteLine("JSON Style: " + text);
                     map.MapStyle = MapStyle.FromJson(text);
                 }
             }
@@ -61,14 +61,12 @@ namespace jogr
                 Console.Out.WriteLine("Stream was empty");
             }
 
-
-
             displayRoute();
-
 
             //Generate a route based on current location
             async Task displayRoute()
             {
+                //Get the users current location
                 Plugin.Geolocator.Abstractions.Position myGeoPos = null;
                 try
                 {
@@ -82,7 +80,7 @@ namespace jogr
                 }
 
                 Position myPos = new Position(myGeoPos.Latitude, myGeoPos.Longitude);
-
+                //Display a pin at users location
                 Pin myLocation = new Pin
                 {
                     Type = PinType.Generic,
@@ -95,19 +93,11 @@ namespace jogr
                 MapSpan mySpan = new MapSpan(myPos, 5, 5);
                 map.MoveToRegion(mySpan);
 
-                // Hard coded, need to connect to GUI input
+                // Set distance between waypoints based on passed distance option
                 double distanceMetres = setDistance * 1000;
                 double quarterDistance = distanceMetres / 4;
 
-                //Testing receiving a default route
-                /*Position waypoint1 = new Position(myPos.Latitude + 0.005, myPos.Longitude); // north
-                Position waypoint2 = new Position(myPos.Latitude + 0.005, myPos.Longitude + 0.005); // east
-                Position waypoint3 = new Position(myPos.Latitude, myPos.Longitude + 0.005); // south
-
-                Position waypoint1 = ConvertDistToLatLng(myPos, 0, quarterDistance);
-                Position waypoint2 = ConvertDistToLatLng(waypoint1, 1, quarterDistance);
-                Position waypoint3 = ConvertDistToLatLng(waypoint2, 2, quarterDistance);*/
-
+                //Randomize route direction
                 Random random = new Random(DateTime.UtcNow.Millisecond);
                 int directionRandomizer = random.Next(0, 4);
 
@@ -239,13 +229,13 @@ namespace jogr
                     Label = "start route"
                 };
                 map.Pins.Add(startloc);
-                Pin endloc = new Pin
+                /*Pin endloc = new Pin
                 {
                     Type = PinType.Generic,
                     Position = endLocation,
                     Label = "end route"
                 };
-                map.Pins.Add(endloc);
+                map.Pins.Add(endloc);*/
             }
             else
             {
@@ -264,9 +254,11 @@ namespace jogr
             var objRoutes = JsonConvert.DeserializeObject<googledirectionclass>(strJSONDirectionResponse);
 
             // Check for zero results case, and if no results alert the user
-            if (objRoutes.status == "ZERO_RESULTS")
+            if (objRoutes.status != "OK")
             {
-                await DisplayAlert("Alert", "Invalid Lat/Lng Values", "OK");
+                await DisplayAlert("Alert", "Problem with Directions Request: "+objRoutes.status, "OK");
+                //Go back to options screen
+                await Navigation.PopAsync();
                 return;
             }
             else
@@ -281,7 +273,7 @@ namespace jogr
                 Xamarin.Forms.GoogleMaps.Polyline polylineoption = new Xamarin.Forms.GoogleMaps.Polyline();
 
                 polylineoption.StrokeWidth = 6f;
-                polylineoption.StrokeColor = Color.FromHex("#315C6A");
+                polylineoption.StrokeColor = Color.White;
 
                 double[] latList = new double[lstDecodedPoints.Count];
                 double[] lngList = new double[lstDecodedPoints.Count];
