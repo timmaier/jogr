@@ -25,10 +25,11 @@ namespace jogr
         //Pressed 'go.' button
         async void GoToMapsPage(object sender, EventArgs args)
         {
+            double setDistance = DISTANCE;
             System.Diagnostics.Debug.WriteLine("Pressed");
             try
             {
-                await Navigation.PushAsync(new MapPage());
+                await Navigation.PushAsync(new MapPage(setDistance));
             }
             catch (Exception ex)
             {

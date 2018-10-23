@@ -28,8 +28,9 @@ namespace jogr
         public Map map;
 
         //Constructor
-        public MapPage()
+        public MapPage(double distance)
         {
+            double setDistance = distance;
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
 
@@ -95,7 +96,7 @@ namespace jogr
                 map.MoveToRegion(mySpan);
 
                 // Hard coded, need to connect to GUI input
-                double distanceMetres = 2000;
+                double distanceMetres = setDistance * 1000;
                 double quarterDistance = distanceMetres / 4;
 
                 //Testing receiving a default route
