@@ -16,6 +16,8 @@ using Xamarin.Forms.GoogleMaps;
 using Plugin.Geolocator;
 using Newtonsoft.Json;
 using Plugin.Connectivity;
+using GeoCoordinatePortable;
+
 
 namespace jogr
 {
@@ -92,20 +94,80 @@ namespace jogr
                 MapSpan mySpan = new MapSpan(myPos, 5, 5);
                 map.MoveToRegion(mySpan);
 
+                double distanceMetres = 10000;
+                double quarterDistance = distanceMetres / 4;
+
                 //Testing receiving a default route
-                Position waypoint1 = new Position(myPos.Latitude + 0.005, myPos.Longitude);
-                Position waypoint2 = new Position(myPos.Latitude + 0.005, myPos.Longitude + 0.005);
-                Position waypoint3 = new Position(myPos.Latitude, myPos.Longitude + 0.005);
+                /*Position waypoint1 = new Position(myPos.Latitude + 0.005, myPos.Longitude); // north
+                Position waypoint2 = new Position(myPos.Latitude + 0.005, myPos.Longitude + 0.005); // east
+                Position waypoint3 = new Position(myPos.Latitude, myPos.Longitude + 0.005); // south*/
+
+                Position waypoint1 = ConvertDistToLatLng(myPos, 0, quarterDistance);
+                Position waypoint2 = ConvertDistToLatLng(waypoint1, 1, quarterDistance);
+                Position waypoint3 = ConvertDistToLatLng(waypoint2, 2, quarterDistance);
+
                 //Request Route still being worked on
                 requestRoute(myPos, myPos, waypoint1, waypoint2, waypoint3);
-
-                //This Function is not currently working
-                //GoToLocationOnMap();   
+  
             }
 
             displayRoute();
         }
 
+
+        // Method to try and link distance to lat/lng changes for a given direction (Hard Coded)
+        // Using values for direction: 0 = North, 1 = East, 2 = South, 3 = West (not necessary)
+        Position ConvertDistToLatLng(Position previousPos, int direction, double quarterDistance)
+        {
+            double preLat = previousPos.Latitude;
+            double preLng = previousPos.Longitude;
+
+            GeoCoordinate startLoc = new GeoCoordinate(preLat, preLng);
+
+            double increment = 0.0001;
+            double latLngChange = increment;
+            bool distanceFound = false;
+            double distCheck;
+
+            switch (direction)
+            {
+                case 0:
+                    while (!distanceFound)
+                    {
+                        distCheck = startLoc.GetDistanceTo(new GeoCoordinate(preLat + latLngChange, preLng));
+                        latLngChange += increment;
+                        if (distCheck > quarterDistance)
+                        {
+                            distanceFound = true;
+                        }
+                    }
+                    return new Position(preLat + latLngChange, preLng);
+                case 1:
+                    while (!distanceFound)
+                    {
+                        distCheck = startLoc.GetDistanceTo(new GeoCoordinate(preLat, preLng + latLngChange));
+                        latLngChange += increment;
+                        if (distCheck > quarterDistance)
+                        {
+                            distanceFound = true;
+                        }
+                    }
+                    return new Position(preLat, preLng + latLngChange);
+                case 2:
+                    while (!distanceFound)
+                    {
+                        distCheck = startLoc.GetDistanceTo(new GeoCoordinate(preLat - latLngChange, preLng));
+                        latLngChange += increment;
+                        if (distCheck > quarterDistance)
+                        {
+                            distanceFound = true;
+                        }
+                    }
+                    return new Position(preLat - latLngChange, preLng);
+                default:
+                    return new Position(preLat, preLng);                    
+            }
+        }
 
         //Pressed Back Button
         async void GoToOptionsPage(object sender, EventArgs args)
