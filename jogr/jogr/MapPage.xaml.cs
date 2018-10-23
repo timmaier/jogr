@@ -63,7 +63,7 @@ namespace jogr
 
 
 
-            //displayRoute();
+            displayRoute();
 
 
             //Generate a route based on current location
@@ -121,8 +121,6 @@ namespace jogr
                 requestRoute(myPos, myPos, waypoint1, waypoint2, waypoint3);
   
             }
-
-            displayRoute();
         }
 
         // Method to try and link distance to lat/lng changes for a given direction (Hard Coded)
@@ -219,8 +217,11 @@ namespace jogr
             }
             Console.Out.WriteLine("Try Requesting");
             string apiKey = "AIzaSyBj3FmgND9IRoLFfh25eiE2x6Hg37uzDg4";
-            string requesturl = "https://maps.googleapis.com/maps/api/directions/json?" + "mode=walking" + "&units=metric" + "&origin=" + startLocation.Latitude.ToString() + "," + startLocation.Longitude.ToString() + "&destination=" + endLocation.Latitude.ToString() + "," + endLocation.Longitude.ToString()
-                + "&waypoints=optimize:true|" + waypoint1.Latitude.ToString() + "," + waypoint1.Longitude.ToString() + "|" + waypoint2.Latitude.ToString() + "," + waypoint2.Longitude.ToString() + "|" + waypoint3.Latitude.ToString() + "," + waypoint3.Longitude.ToString() + "&key=" + apiKey;
+            string requesturl = "https://maps.googleapis.com/maps/api/directions/json?" + "mode=walking" + "&units=metric"  + "&avoid=ferries"
+                + "&origin=" + startLocation.Latitude.ToString() + "," + startLocation.Longitude.ToString() 
+                + "&destination=" + endLocation.Latitude.ToString() + "," + endLocation.Longitude.ToString()
+                + "&waypoints=optimize:true|" + waypoint1.Latitude.ToString() + "," + waypoint1.Longitude.ToString() + "|" + waypoint2.Latitude.ToString() + "," + waypoint2.Longitude.ToString() + "|" + waypoint3.Latitude.ToString() + "," + waypoint3.Longitude.ToString() 
+                + "&key=" + apiKey;
 
             //Test for exceptions
             string strException = "-1";
