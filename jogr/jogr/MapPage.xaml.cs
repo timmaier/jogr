@@ -94,17 +94,27 @@ namespace jogr
                 MapSpan mySpan = new MapSpan(myPos, 5, 5);
                 map.MoveToRegion(mySpan);
 
-                double distanceMetres = 10000;
+                // Hard coded, need to connect to GUI input
+                double distanceMetres = 2000;
                 double quarterDistance = distanceMetres / 4;
 
                 //Testing receiving a default route
                 /*Position waypoint1 = new Position(myPos.Latitude + 0.005, myPos.Longitude); // north
                 Position waypoint2 = new Position(myPos.Latitude + 0.005, myPos.Longitude + 0.005); // east
-                Position waypoint3 = new Position(myPos.Latitude, myPos.Longitude + 0.005); // south*/
+                Position waypoint3 = new Position(myPos.Latitude, myPos.Longitude + 0.005); // south
 
                 Position waypoint1 = ConvertDistToLatLng(myPos, 0, quarterDistance);
                 Position waypoint2 = ConvertDistToLatLng(waypoint1, 1, quarterDistance);
-                Position waypoint3 = ConvertDistToLatLng(waypoint2, 2, quarterDistance);
+                Position waypoint3 = ConvertDistToLatLng(waypoint2, 2, quarterDistance);*/
+
+                Random random = new Random(DateTime.UtcNow.Millisecond);
+                int directionRandomizer = random.Next(0, 4);
+
+                Position waypoint1 = ConvertDistToLatLng(myPos, directionRandomizer % 4, quarterDistance);
+                Position waypoint2 = ConvertDistToLatLng(waypoint1, (directionRandomizer + 1) % 4, quarterDistance);
+                Position waypoint3 = ConvertDistToLatLng(waypoint2, (directionRandomizer + 2) % 4, quarterDistance);
+
+                //ReturnRandomizedRouteDirections(myPos, waypoint1, waypoint2, waypoint3, quarterDistance);
 
                 //Request Route still being worked on
                 requestRoute(myPos, myPos, waypoint1, waypoint2, waypoint3);
@@ -114,9 +124,8 @@ namespace jogr
             displayRoute();
         }
 
-
         // Method to try and link distance to lat/lng changes for a given direction (Hard Coded)
-        // Using values for direction: 0 = North, 1 = East, 2 = South, 3 = West (not necessary)
+        // Using values for direction: 0 = North, 1 = East, 2 = South, 3 = West
         Position ConvertDistToLatLng(Position previousPos, int direction, double quarterDistance)
         {
             double preLat = previousPos.Latitude;
@@ -164,6 +173,17 @@ namespace jogr
                         }
                     }
                     return new Position(preLat - latLngChange, preLng);
+                case 3:
+                    while (!distanceFound)
+                    {
+                        distCheck = startLoc.GetDistanceTo(new GeoCoordinate(preLat, preLng - latLngChange));
+                        latLngChange += increment;
+                        if (distCheck > quarterDistance)
+                        {
+                            distanceFound = true;
+                        }
+                    }
+                    return new Position(preLat, preLng - latLngChange);
                 default:
                     return new Position(preLat, preLng);                    
             }
