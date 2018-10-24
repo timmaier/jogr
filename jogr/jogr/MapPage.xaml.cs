@@ -8,6 +8,7 @@ using System.Collections.Specialized;
 using System.Net;
 using System.IO;
 using System.Reflection;
+using System.Timers;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -26,6 +27,10 @@ namespace jogr
     {
         //Get a reference to the map component
         public Map map;
+        //Public pin value
+        public Pin myLocation;
+        //Timer for updating pin
+        public Timer locationTimer;
 
         //Constructor
         public MapPage(double distance)
@@ -40,10 +45,6 @@ namespace jogr
             //Customize Map
             map.MapType = MapType.Street;
             map.IsTrafficEnabled = false;
-
-
-            //var assembly = IntrospectionExtensions.GetTypeInfo(typeof(LoadResourceText)).Assembly;
-
             var assembly = IntrospectionExtensions.GetTypeInfo(typeof(MapStyleClass)).Assembly;
             Stream stream = assembly.GetManifestResourceStream("jogr.CustomMap.json");
             if (stream != null)
@@ -52,14 +53,20 @@ namespace jogr
                 using (var reader = new StreamReader(stream))
                 {
                     text = reader.ReadToEnd();
-                    Console.Out.WriteLine("JSON Style: " + text);
                     map.MapStyle = MapStyle.FromJson(text);
                 }
             }
             else
             {
-                Console.Out.WriteLine("Stream was empty");
+                Console.Out.WriteLine("Style stream was empty");
             }
+
+            //Create Location Pin
+            myLocation = new Pin
+            {
+                Type = PinType.Place,
+                Label = "myLocation"
+            };
 
             displayRoute();
 
@@ -80,16 +87,18 @@ namespace jogr
                 }
 
                 Position myPos = new Position(myGeoPos.Latitude, myGeoPos.Longitude);
+
                 //Display a pin at users location
-                Pin myLocation = new Pin
-                {
-                    Type = PinType.Generic,
-                    Position = myPos,
-                    Label = "me",
-                    Address = "Brisbane"
-                };
+                myLocation.Position = myPos;
                 map.Pins.Add(myLocation);
 
+                //Create Timer for updating users location
+                locationTimer = new System.Timers.Timer(500);
+                locationTimer.Elapsed += UpdateUserLocation;
+                locationTimer.Enabled = true;
+                locationTimer.AutoReset = true;
+                
+                //Zoom the map into the users location
                 MapSpan mySpan = new MapSpan(myPos, 5, 5);
                 map.MoveToRegion(mySpan);
 
@@ -105,12 +114,32 @@ namespace jogr
                 Position waypoint2 = ConvertDistToLatLng(waypoint1, (directionRandomizer + 1) % 4, quarterDistance);
                 Position waypoint3 = ConvertDistToLatLng(waypoint2, (directionRandomizer + 2) % 4, quarterDistance);
 
-                //ReturnRandomizedRouteDirections(myPos, waypoint1, waypoint2, waypoint3, quarterDistance);
-
-                //Request Route still being worked on
+                //Request directions using waypoints
                 requestRoute(myPos, myPos, waypoint1, waypoint2, waypoint3);
   
             }
+        }
+
+        // Timer method for updating users location on map
+        async private void UpdateUserLocation(Object source, ElapsedEventArgs e)
+        {
+            //Request users location
+            Plugin.Geolocator.Abstractions.Position myGeoPos = null;
+            try
+            {
+                var locator = CrossGeolocator.Current;
+                locator.DesiredAccuracy = 100;
+                myGeoPos = await locator.GetPositionAsync(TimeSpan.FromSeconds(1));
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("There was an error: " + ex);
+            }
+
+            Position myPos = new Position(myGeoPos.Latitude, myGeoPos.Longitude);
+            //Update pin location
+            myLocation.Position = myPos;
         }
 
         // Method to try and link distance to lat/lng changes for a given direction (Hard Coded)
@@ -218,42 +247,16 @@ namespace jogr
 
             string strJSONDirectionResponse = await FnHttpRequest(requesturl);
 
-            if (strJSONDirectionResponse != strException)
-            {
-
-                //Mark source and destination on map
-                Pin startloc = new Pin
-                {
-                    Type = PinType.Generic,
-                    Position = startLocation,
-                    Label = "start route"
-                };
-                map.Pins.Add(startloc);
-                /*Pin endloc = new Pin
-                {
-                    Type = PinType.Generic,
-                    Position = endLocation,
-                    Label = "end route"
-                };
-                map.Pins.Add(endloc);*/
-            }
-            else
+            if (strJSONDirectionResponse == strException)
             {
                 Console.Out.WriteLine("Error Returned");
                 return;
             }
 
-
-            /*
-             * NEED TO CHECK IF THE RETURNED JSON IS AN ERROR ONE
-             * IF IT IS AN ERROR, RESEND THE REQUEST, AND DON'T
-             * PROCEED WITH THE FUNCTION
-             */
-
             //Convert Json to a class
             var objRoutes = JsonConvert.DeserializeObject<googledirectionclass>(strJSONDirectionResponse);
 
-            // Check for zero results case, and if no results alert the user
+            // Check for error return case - Return to options screen if error returned
             if (objRoutes.status != "OK")
             {
                 await DisplayAlert("Alert", "Problem with Directions Request: "+objRoutes.status, "OK");
@@ -266,9 +269,6 @@ namespace jogr
                 //Decode The Returned points
                 string encodedPoints = objRoutes.routes[0].overview_polyline.points;
                 var lstDecodedPoints = FnDecodePolylinePoints(encodedPoints);
-
-                Console.Out.WriteLine("Latitude: " + lstDecodedPoints[0].Latitude + ", Longitude:" + lstDecodedPoints[0].Longitude);
-
 
                 Xamarin.Forms.GoogleMaps.Polyline polylineoption = new Xamarin.Forms.GoogleMaps.Polyline();
 
@@ -294,11 +294,10 @@ namespace jogr
                 map.Polylines.Add(polylineoption);
                 MapSpan routeSpan = new MapSpan(routeCentrePos, 0.02, 0.02);
                 map.MoveToRegion(routeSpan);
-
-                //--TASKS--
             }
 
 
+            //--TASKS--
 
             //Request String
             WebClient webclient;
@@ -309,7 +308,6 @@ namespace jogr
                 try
                 {
                     strResultData = await webclient.DownloadStringTaskAsync(new Uri(strUri));
-                    Console.Out.WriteLine("Results: " + strResultData);
                 }
                 catch (Exception ex)
                 {
