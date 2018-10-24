@@ -49,10 +49,10 @@
 			<!-- Parameters Box -->
 			<Grid Grid.Row="4" Grid.Column="0" BackgroundColor="Transparent" Grid.ColumnSpan="2" Grid.RowSpan="1" Padding="20,10,20,0">
 				<Frame HasShadow="False" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Margin="0" BackgroundColor="#D4D4D4" CornerRadius="15">
-					<Label Text="time" FontSize="Large" TextColor="#C00303" VerticalOptions="Start" HorizontalOptions="Center" TranslationY="-10"/>
+					<Label Text="time (m)" FontSize="Large" TextColor="#C00303" VerticalOptions="Start" HorizontalOptions="Center" TranslationY="-10"/>
 				</Frame>
 				<Frame HasShadow="False" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" BackgroundColor="Transparent" CornerRadius="15">
-					<Label x:Name="time (m)" Text="0" FontAttributes="Bold" FontSize="50" VerticalOptions="Center" HorizontalOptions="Center"/>
+					<Label x:Name="time" Text="00:00" FontAttributes="Bold" FontSize="50" VerticalOptions="Center" HorizontalOptions="Center"/>
 				</Frame>
 				<Label Text="(estimated)" VerticalOptions="End" HorizontalOptions="Center" TranslationY="-10"/>
 

@@ -11,7 +11,7 @@
 			HasZoomEnabled="True"			
         />
 
-		<Button Clicked="GoToOptionsPage" WidthRequest="64" HeightRequest="64" 
+		<Button Clicked="GoToOptionsPage" WidthRequest="64" HeightRequest="64" Margin="5" 
 				HorizontalOptions="Start" VerticalOptions="End" 
 				BackgroundColor="#00000000"
 				Image="backbutton.png"

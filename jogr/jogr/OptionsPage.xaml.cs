@@ -37,7 +37,7 @@ namespace jogr
             }
         }
 
-        // Minor estimation calculations for time and kilojoules burned using distance defined
+        // Estimation calculations for time and kilojoules burned using distance defined
         void OnSliderValueChanged(object sender, ValueChangedEventArgs args)
         {
             double value = args.NewValue;
