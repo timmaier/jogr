@@ -52,7 +52,7 @@
 					<Label Text="time (m)" FontSize="Large" TextColor="#C00303" VerticalOptions="Start" HorizontalOptions="Center" TranslationY="-10"/>
 				</Frame>
 				<Frame HasShadow="False" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" BackgroundColor="Transparent" CornerRadius="15">
-					<Label x:Name="time" Text="00:00" FontAttributes="Bold" FontSize="50" VerticalOptions="Center" HorizontalOptions="Center"/>
+					<Label x:Name="time" Text="0" FontAttributes="Bold" FontSize="50" VerticalOptions="Center" HorizontalOptions="Center"/>
 				</Frame>
 				<Label Text="(estimated)" VerticalOptions="End" HorizontalOptions="Center" TranslationY="-10"/>
 
