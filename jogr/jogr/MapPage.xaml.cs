@@ -65,9 +65,10 @@ namespace jogr
             myLocation = new Pin
             {
                 Type = PinType.Place,
-                Label = "myLocation"
+                Label = "myLocation",
+                Icon = BitmapDescriptorFactory.DefaultMarker(Color.Red)
             };
-
+            
             displayRoute();
 
             //Generate a route based on current location
