@@ -12,7 +12,7 @@
         />
 
 		<Button Clicked="GoToOptionsPage" WidthRequest="64" HeightRequest="64" Margin="5" 
-				HorizontalOptions="Start" VerticalOptions="End" 
+				HorizontalOptions="Center" VerticalOptions="End" 
 				BackgroundColor="#00000000"
 				Image="backbutton.png"
 				CornerRadius="15" />
